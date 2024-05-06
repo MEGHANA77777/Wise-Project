@@ -1,0 +1,45 @@
+/*styling heading panel*/
+.panel-heading{
+    background-color: rgb(154, 235, 244);
+    border: 1px solid black;
+    }
+/*styling heading panel text*/
+.panel-heading p {
+    display: flex;
+    font-size: 2rem;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-style: italic;
+    }
+/*styling game section background*/
+.game-section{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: rgba(54, 176, 190, 0.372);
+    height: 500px;
+    }
+/*styling game section content*/
+.box-content{
+    align-items: center;
+    font-weight: lighter;
+    }
+/*styling game section text*/
+.box-content p{
+    font-size: 1.1rem;
+    justify-content: center;
+    }
+/*styling game section image*/
+.box-image{
+    height: 300px;
+    background-size: cover;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 300px;
+    }
+/*styling insturctions panel*/    
+.panel-instructions{
+    display: flex;
+    background-color: rgba(15, 103, 181, 0.461);
+}
