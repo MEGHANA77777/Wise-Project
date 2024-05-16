@@ -1,325 +1,296 @@
-import random
-from collections import deque
+import random, math
 
-# Game variables
-grid = []
-forecast = []
-score = 0
-record = 0
-selected = None
-blocked = False
+class Lines:
+    def __init__(self):
+        self.grid = []
+        self.forecast = []
+        self.score = 0
+        self.record = 0
+        self.selected = None
+        self.blocked = False
+        self.gridElement = None
+        self.forecastElement = None
+        self.scoreElement = None
+        self.recordElement = None
+        self.colors = {
+            1: 'blue',
+            2: 'cyan',
+            3: 'red',
+            4: 'brown',
+            5: 'green',
+            6: 'yellow',
+            7: 'magenta'
+        }
 
-# Game DOM elements
-gridElement = None
-forecastElement = None
-scoreElement = None
-recordElement = None
+    def init(self):
+        self.gridElement = None
+        self.forecastElement = None
+        self.scoreElement = None
+        self.recordElement = None
+        self.grid = []
+        self.score = 0
+        self.blocked = False
+        self.selected = None
+        self.record = 0
+        self.record = 0
+        self.forecastBalls()
+        self.createGrid()
+        self.scoreElement.innerHTML = self.score
+        self.recordElement.innerHTML = self.record
 
-# Ball colors
-colors = {
-    1: 'blue',
-    2: 'cyan',
-    3: 'red',
-    4: 'brown',
-    5: 'green',
-    6: 'yellow',
-    7: 'magenta',
-    'key': lambda color: next(key for key, value in colors.items() if value == color)
-}
+    def createGrid(self):
+        self.gridElement.innerHTML = ''
+        for i in range(9):
+            self.grid[i] = []
+            for j in range(9):
+                self.grid[i][j] = 0
+                cell = document.createElement('div')
+                cell.id = 'cell-'+j+'-'+i
+                cell.className = 'empty'
+                cell.dataset.x = j
+                cell.dataset.y = i
+                cell.style.left = (j*50)+'px'
+                cell.style.top = (i*50)+'px'
+                self.gridElement.appendChild(cell)
+                cell.addEventListener('click', self.onEmptyCellClick, False)
+        self.addBalls()
 
-def init():
-    """
-    Initializes the game
-    """
-    global gridElement, forecastElement, scoreElement, recordElement, grid, score, blocked, selected, record
+    def getCells(self, selector):
+        return self.gridElement.querySelectorAll(selector)
 
-    # Gets game DOM elements
-    gridElement = document.querySelector('.grid')
-    forecastElement = document.querySelector('.forecast')
-    scoreElement = document.querySelector('.score')
-    recordElement = document.querySelector('.record')
+    def getCell(self, x, y):
+        return document.getElementById('cell-'+x+'-'+y)
 
-    # Sets default game values
-    grid = [[0 for _ in range(9)] for _ in range(9)]
-    score = 0
-    blocked = False
-    selected = None
+    def onBallClick(self, e):
+        for cell in self.getCells('.ball'):
+            if cell.classList.contains('selected'):
+                cell.classList.remove('selected')
+                break
+        e.currentTarget.classList.add('selected')
+        self.selected = e.currentTarget
 
-    # Tries to get the record from the local storage
-    record = int(localStorage.getItem('lines-record') or 0)
+    def onEmptyCellClick(self, e):
+        if not self.selected:
+            return
+        to = e.currentTarget
+        from_ = self.selected
+        astar = self.Astar(self.grid)
+        path = astar.find(from_.dataset.x, from_.dataset.y, to.dataset.x, to.dataset.y)
+        if path:
+            self.moveBall(from_, to, path, self.afterMoveBall)
 
-    # Generates forecast balls
-    forecastBalls()
+    def addBalls(self, callback=None):
+        self.blocked = True
+        cells = []
+        for i in range(3):
+            emptyCells = self.getCells('.empty')
+            if len(emptyCells) > 0:
+                cell = emptyCells[random.randint(0, len(emptyCells)-1)]
+                self.grid[cell.dataset.y][cell.dataset.x] = self.colors.key(self.forecast[i])
+                cells.append(cell)
+                cell.className = 'ball '+self.forecast[i]+' fadein'
+            else:
+                break
+        setTimeout(lambda: self.fadeInBalls(cells, callback), 300)
+        self.forecastBalls()
 
-    # Creates grid
-    createGrid()
-
-    scoreElement.innerHTML = str(score)
-    recordElement.innerHTML = str(record)
-
-def createGrid():
-    """
-    Creates the grid
-    """
-    global grid, gridElement
-
-    # Clears grid element
-    gridElement.innerHTML = ''
-
-    for i in range(9):
-        grid[i] = [0] * 9
-        for j in range(9):
-            # Creates new cell
-            cell = document.createElement('div')
-
-            # Sets cell attributes
-            cell.id = f'cell-{j}-{i}'
-            cell.className = 'empty'
-            cell.dataset.x = str(j)
-            cell.dataset.y = str(i)
-            cell.style.left = f'{j * 50}px'
-            cell.style.top = f'{i * 50}px'
-
-            # Adds cell to the grid
-            gridElement.appendChild(cell)
-
-            # Listens for a click event
-            cell.addEventListener('click', lambda e: onCellClick(e), False)
-
-    # Adds random balls on the grid
-    addBalls()
-
-def getCells(selector):
-    """
-    Gets cells by selector
-    """
-    return gridElement.querySelectorAll(selector)
-
-def getCell(x, y):
-    """
-    Gets specific cell by x and y coordinates
-    """
-    return document.getElementById(f'cell-{x}-{y}')
-
-def onCellClick(e):
-    """
-    Event: cell clicked
-    """
-    global selected, blocked
-
-    if blocked:
-        return
-    elif e.currentTarget.className == 'empty':
-        onEmptyCellClick(e)
-    else:
-        onBallClick(e)
-
-def onBallClick(e):
-    """
-    Event: ball clicked
-    """
-    global selected
-
-    # Unselects previously selected cell
-    for cell in getCells('.ball'):
-        if cell.classList.contains('selected'):
-            cell.classList.remove('selected')
-            break
-
-    # Marks clicked cell as selected
-    e.currentTarget.classList.add('selected')
-    selected = e.currentTarget
-
-def onEmptyCellClick(e):
-    """
-    Event: empty cell clicked
-    """
-    global selected
-
-    # Checks if any cell is selected
-    if not selected:
-        return
-
-    to = e.currentTarget
-    from_ = selected
-
-    # Tries to find the path
-    astar = Astar(grid)
-    path = astar.find(int(from_.dataset.x), int(from_.dataset.y), int(to.dataset.x), int(to.dataset.y))
-
-    # Checks if path were found
-    if path:
-        moveBall(from_, to, path, lambda: handleLines(to))
-    else:
-        # TODO: Handle the case when no path is found
-        pass
-
-def forecastBalls():
-    """
-    Generates forecast balls
-    """
-    global forecast, forecastElement
-
-    forecast = [random.randint(1, 7) for _ in range(3)]
-    forecastElement.innerHTML = ''.join(f'<div class="ball" style="background-color: {colors[ball]}"></div>' for ball in forecast)
-
-def addBalls(callback=None):
-    """
-    Adds random balls on the grid
-    """
-    global grid, gridElement
-
-    cells = [cell for cell in getCells('.empty')]
-    if cells:
-        for _ in range(random.randint(1, 3)):
-            cell = random.choice(cells)
-            cell.className = 'ball'
-            cell.style.backgroundColor = colors[random.randint(1, 7)]
-            grid[int(cell.dataset.y)][int(cell.dataset.x)] = colors.key(cell.style.backgroundColor)
-            cells.remove(cell)
+    def fadeInBalls(self, cells, callback):
+        for cell in self.getCells('.fadein'):
+            cell.classList.remove('fadein')
+        self.blocked = False
         if callback:
             callback(cells)
 
-def moveBall(from_, to, path, callback):
-    """
-    Moves a ball from one cell to another
-    """
-    global grid, selected
+    def removeLines(self, lineSets):
+        self.blocked = True
+        for lines in lineSets:
+            scoreAdd = 0
+            for line in lines:
+                for point in line:
+                    x = point[0]
+                    y = point[1]
+                    cell = self.getCell(x, y)
+                    cell.classList.add('fadeout')
+                    self.grid[y][x] = 0
+                    scoreAdd += 2
+        self.updateScore(scoreAdd)
+        setTimeout(self.fadeOutLines, 300)
 
-    # Move the ball
-    to.className = 'ball'
-    to.style.backgroundColor = from_.style.backgroundColor
-    grid[int(to.dataset.y)][int(to.dataset.x)] = grid[int(from_.dataset.y)][int(from_.dataset.x)]
-    from_.className = 'empty'
-    grid[int(from_.dataset.y)][int(from_.dataset.x)] = 0
-    selected = None
+    def fadeOutLines(self):
+        for cell in self.getCells('.fadeout'):
+            cell.className = 'empty'
+        self.blocked = False
 
-    # Call the callback function
-    callback()
+    def moveBall(self, from_, to, path, callback):
+        self.blocked = True
+        self.grid[from_.dataset.y][from_.dataset.x] = 0
+        color = from_.classList.item(1)
+        previous = None
+        from_.className = 'empty'
+        self.selected = None
+        for i in range(len(path)+1):
+            if i == len(path):
+                self.grid[to.dataset.y][to.dataset.x] = self.colors.key(color)
+                to.className = 'ball '+color
+                self.blocked = False
+                callback()
+            else:
+                if previous:
+                    previous.className = 'empty'
+                cell = previous = self.getCell(path[i].x, path[i].y)
+                cell.className = 'ball '+color
 
-def getLines(cell):
-    """
-    Gets five-ball lines for a given cell
-    """
-    global grid
+    def getLines(self, cell):
+        x = int(cell.dataset.x)
+        y = int(cell.dataset.y)
+        ball = self.colors.key(cell.classList.item(1))
+        lines = [[[x,y]], [[x,y]], [[x,y]], [[x,y]]]
+        l = r = d = u = lu = ru = ld = rd = ball
+        i = 1
+        while ball in [l,r,d,u,lu,ru,ld,rd]:
+            if l == self.grid[y][x-i]:
+                lines[0].append([x-i,y])
+            else:
+                l = -1
+            if r == self.grid[y][x+i]:
+                lines[0].append([x+i,y])
+            else:
+                r = -1
+            if y-i >= 0 and u == self.grid[y-i][x]:
+                lines[1].append([x,y-i])
+            else:
+                u = -1
+            if y+i <= 8 and d == self.grid[y+i][x]:
+                lines[1].append([x,y+i])
+            else:
+                d = -1
+            if y-i >= 0 and lu == self.grid[y-i][x-i]:
+                lines[2].append([x-i,y-i])
+            else:
+                lu = -1
+            if y+i <= 8 and rd == self.grid[y+i][x+i]:
+                lines[2].append([x+i,y+i])
+            else:
+                rd = -1
+            if y+i <= 8 and ld == self.grid[y+i][x-i]:
+                lines[3].append([x-i,y+i])
+            else:
+                ld = -1
+            if y-i >= 0 and ru == self.grid[y-i][x+i]:
+                lines[3].append([x+i,y-i])
+            else:
+                ru = -1
+            i += 1
+        for i in range(len(lines)-1, -1, -1):
+            if len(lines[i]) < 5:
+                lines.pop(i)
+        return lines if len(lines) > 0 else False
 
-    x, y = int(cell.dataset.x), int(cell.dataset.y)
-    color = grid[y][x]
+    def forecastBalls(self):
+        self.forecast = []
+        self.forecastElement.innerHTML = ''
+        for i in range(3):
+            ball = document.createElement('div')
+            self.forecast[i] = self.colors[random.randint(1, 7)]
+            ball.className = 'ball '+self.forecast[i]
+            self.forecastElement.appendChild(ball)
 
-    # Check horizontal lines
-    for dx in [-4, -3, -2, -1, 0, 1, 2, 3, 4]:
-        if 0 <= x + dx < 9 and grid[y][x + dx] == color:
-            line = [(x + i, y) for i in range(dx, dx + 5)]
-            if all(grid[y][x + i] == color for i in range(dx, dx + 5)):
-                return line
+    def updateScore(self, add):
+        self.score += add
+        if self.score > self.record:
+            localStorage.setItem('lines-record', self.score)
+            self.recordElement.innerHTML = self.record = self.score
+        self.scoreElement.innerHTML = self.score
 
-    # Check vertical lines
-    for dy in [-4, -3, -2, -1, 0, 1, 2, 3, 4]:
-        if 0 <= y + dy < 9 and grid[y + dy][x] == color:
-            line = [(x, y + i) for i in range(dy, dy + 5)]
-            if all(grid[y + i][x] == color for i in range(dy, dy + 5)):
-                return line
+    def gameOver(self):
+        self.blocked = True
+        if confirm('Game over! Your score is '+self.score+'!\nPlay again?'):
+            self.init()
 
-    return None
+    def rand(self, from_, to):
+        return (math.floor(math.random() * (to-(from_+1)) + from_))
 
-def removeLines(lineSets):
-    """
-    Removes five-ball lines from the grid
-    """
-    global grid, score, record, blocked
+    def each(self, object, callback):
+        for i in range(len(object)):
+            callback(object[i], i)
 
-    for lines in lineSets:
-        for x, y in lines:
-            grid[y][x] = 0
-            getCell(x, y).className = 'empty'
-        score += 100 * len(lines)
-        scoreElement.innerHTML = str(score)
+    class Astar:
+        def __init__(self, grid):
+            self.nodes = []
+            self.openset = []
 
-        if score > record:
-            record = score
-            recordElement.innerHTML = str(record)
-            localStorage.setItem('lines-record', str(record))
+        def init(self, startX, startY):
+            for i in range(9):
+                self.nodes[i] = []
+                for j in range(9):
+                    self.nodes[i][j] = {
+                        'obstacle': self.grid[i][j],
+                        'parent': 0,
+                        'f': 0,
+                        'g': 0,
+                        'h': 0,
+                        'x': j,
+                        'y': i,
+                        'closed': False
+                    }
+            self.openset.append(self.nodes[startY][startX])
 
-    blocked = True
-    addBalls(lambda cells: handleLines(cells[0]))
+        def find(self, startX, startY, endX, endY):
+            self.init(startX, startY)
+            while len(self.openset) > 0:
+                index = 0
+                for i in range(len(self.openset)):
+                    if self.openset[i].f < self.openset[index].f:
+                        index = i
+                currentNode = self.openset[index]
+                if currentNode.x == endX and currentNode.y == endY:
+                    return self.reconstructPath(currentNode)
+                self.openset.pop(index)
+                currentNode.closed = True
+                neighbors = self.getNeighbors(currentNode)
+                for neighbor in neighbors:
+                    if neighbor.closed or neighbor.obstacle != 0:
+                        continue
+                    g = currentNode.g+1
+                    gIsBest = False
+                    if not self.isOpened(neighbor):
+                        gIsBest = True
+                        neighbor.h = abs(neighbor.x-endX) + abs(neighbor.y-endY)
+                        self.openset.append(neighbor)
+                    elif g < neighbor.g:
+                        gIsBest = True
+                    if gIsBest:
+                        neighbor.parent = currentNode
+                        neighbor.g = g
+                        neighbor.f = neighbor.g + neighbor.h
+            return False
 
-def handleLines(cell):
-    """
-    Handles the lines after a ball is moved
-    """
-    global blocked
+        def reconstructPath(self, node):
+            path = []
+            while node.parent:
+                path.append(node)
+                node = node.parent
+            return path.reverse()
 
-    lines = getLines(cell)
-    if lines:
-        removeLines([lines])
-    else:
-        addBalls(lambda cells: handleLines(cells[0]))
-    blocked = False
+        def getNeighbors(self, node):
+            neighbors = []
+            x = node.x
+            y = node.y
+            if y-1 >= 0:
+                neighbors.append(self.nodes[y-1][x])
+            if y+1 <= 8:
+                neighbors.append(self.nodes[y+1][x])
+            if x-1 >= 0:
+                neighbors.append(self.nodes[y][x-1])
+            if x+1 <= 8:
+                neighbors.append(self.nodes[y][x+1])
+            return neighbors
 
-class Astar:
-    """
-    A* pathfinding algorithm
-    """
-    def __init__(self, grid):
-        self.grid = grid
+        def isOpened(self, node):
+            for i in range(len(self.openset)):
+                if self.openset[i].x == node.x and self.openset[i].y == node.y:
+                    return True
+            return False
 
-    def find(self, start_x, start_y, end_x, end_y):
-        """
-        Finds the path from the start to the end cell
-        """
-        start = (start_x, start_y)
-        end = (end_x, end_y)
-
-        open_set = deque([(0, start)])
-        came_from = {}
-        g_score = {start: 0}
-        f_score = {start: self.heuristic(start, end)}
-
-        while open_set:
-            current = open_set.popleft()[1]
-
-            if current == end:
-                return self.reconstruct_path(came_from, current)
-
-            for neighbor in self.get_neighbors(current):
-                tentative_g_score = g_score[current] + 1
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
-                    came_from[neighbor] = current
-                    g_score[neighbor] = tentative_g_score
-                    f_score[neighbor] = tentative_g_score + self.heuristic(neighbor, end)
-                    open_set.append((f_score[neighbor], neighbor))
-
-        return None
-
-    def get_neighbors(self, cell):
-        """
-        Gets the neighboring cells of a given cell
-        """
-        x, y = cell
-        neighbors = []
-        for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < 9 and 0 <= ny < 9 and self.grid[ny][nx] == 0:
-                neighbors.append((nx, ny))
-        return neighbors
-
-    def heuristic(self, a, b):
-        """
-        Calculates the Manhattan distance between two cells
-        """
-        (x1, y1), (x2, y2) = a, b
-        return abs(x1 - x2) + abs(y1 - y2)
-
-    def reconstruct_path(self, came_from, current):
-        """
-        Reconstructs the path from the start to the end cell
-        """
-        path = [(int(current[0]), int(current[1]))]
-        while current in came_from:
-            current = came_from[current]
-            path.append((int(current[0]), int(current[1])))
-        path.reverse()
-        return path
-
-
-    
+    def __init__(self):
+        self.init()
