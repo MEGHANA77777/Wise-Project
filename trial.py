@@ -12,12 +12,13 @@ MOVE_DELAY = 500  # in milliseconds
 class ColorLinesGame:
     def __init__(self, master):
         self.master = master
-        self.master.title("Color Lines")
+        self.master.title("Color Lines - Score: 0")
 
         self.canvas = tk.Canvas(master, width=CELL_SIZE * BOARD_SIZE, height=CELL_SIZE * BOARD_SIZE)
         self.canvas.pack()
 
         self.board = [[None] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+        self.ball_ids = [[None] * BOARD_SIZE for _ in range(BOARD_SIZE)]
         self.score = 0
         self.game_over = False
 
@@ -25,6 +26,7 @@ class ColorLinesGame:
         self.generate_balls(3)
 
         self.canvas.bind("<Button-1>", self.handle_click)
+        self.selected_ball = None
 
     def draw_board(self):
         for row in range(BOARD_SIZE):
@@ -41,32 +43,42 @@ class ColorLinesGame:
                 row, col = empty_cells.pop()
                 color = random.choice(BALL_COLORS)
                 self.board[row][col] = color
-                x, y = col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE // 2
-                self.canvas.create_oval(x - BALL_RADIUS, y - BALL_RADIUS, x + BALL_RADIUS, y + BALL_RADIUS, fill=color)
+                self.draw_ball(row, col, color)
+
+    def draw_ball(self, row, col, color):
+        x, y = col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE // 2
+        ball_id = self.canvas.create_oval(x - BALL_RADIUS, y - BALL_RADIUS, x + BALL_RADIUS, y + BALL_RADIUS, fill=color, tags=f"ball_{row}_{col}")
+        self.ball_ids[row][col] = ball_id
 
     def handle_click(self, event):
         if self.game_over:
             return
 
         col, row = event.x // CELL_SIZE, event.y // CELL_SIZE
-        if self.board[row][col] is None:
-            print("Selected an empty cell!")
-            return
 
-        self.move_balls(row, col)
+        if self.selected_ball:
+            if self.board[row][col] is None:
+                self.move_ball(self.selected_ball, (row, col))
+                self.selected_ball = None
+                self.generate_balls(3)
+                self.check_lines()
+                self.check_game_over()
+            else:
+                self.selected_ball = (row, col)
+        else:
+            if self.board[row][col] is not None:
+                self.selected_ball = (row, col)
 
-    def move_balls(self, row, col):
-        selected_color = self.board[row][col]
-        empty_cells = [(r, c) for r in range(BOARD_SIZE) for c in range(BOARD_SIZE) if self.board[r][c] is None]
-        while empty_cells:
-            new_row, new_col = random.choice(empty_cells)
-            self.board[new_row][new_col] = selected_color
-            x, y = new_col * CELL_SIZE + CELL_SIZE // 2, new_row * CELL_SIZE + CELL_SIZE // 2
-            self.canvas.create_oval(x - BALL_RADIUS, y - BALL_RADIUS, x + BALL_RADIUS, y + BALL_RADIUS, fill=selected_color)
-            empty_cells.remove((new_row, new_col))
-            self.canvas.update_idletasks()
+    def move_ball(self, from_pos, to_pos):
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
 
-        self.check_lines()
+        self.board[to_row][to_col] = self.board[from_row][from_col]
+        self.board[from_row][from_col] = None
+
+        self.canvas.move(self.ball_ids[from_row][from_col], (to_col - from_col) * CELL_SIZE, (to_row - from_row) * CELL_SIZE)
+        self.ball_ids[to_row][to_col] = self.ball_ids[from_row][from_col]
+        self.ball_ids[from_row][from_col] = None
 
     def check_lines(self):
         lines_removed = False
@@ -83,32 +95,13 @@ class ColorLinesGame:
                         if len(line) >= 5:
                             for r, c in line:
                                 self.board[r][c] = None
-                                self.canvas.delete("ball_" + str(r) + "_" + str(c))
+                                self.canvas.delete(self.ball_ids[r][c])
+                                self.ball_ids[r][c] = None
                             self.score += len(line) * 2
                             lines_removed = True
 
         if lines_removed:
             self.master.title("Color Lines - Score: " + str(self.score))
-            self.canvas.update_idletasks()
-            self.canvas.after(MOVE_DELAY, self.shift_down)
-        else:
-            self.check_game_over()
-
-    def shift_down(self):
-        for col in range(BOARD_SIZE):
-            for row in range(BOARD_SIZE - 1, -1, -1):
-                if self.board[row][col] is None:
-                    for r in range(row - 1, -1, -1):
-                        if self.board[r][col] is not None:
-                            self.board[row][col] = self.board[r][col]
-                            self.board[r][col] = None
-                            x0, y0 = col * CELL_SIZE, r * CELL_SIZE
-                            x1, y1 = x0 + CELL_SIZE, y0 + CELL_SIZE
-                            self.canvas.move("ball_" + str(r) + "_" + str(col), 0, CELL_SIZE)
-                            self.canvas.itemconfig("ball_" + str(r) + "_" + str(col), tags="ball_" + str(row) + "_" + str(col))
-                            break
-        self.canvas.update_idletasks()
-        self.generate_balls(3)
 
     def check_game_over(self):
         for row in range(BOARD_SIZE):
