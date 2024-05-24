@@ -1,3 +1,4 @@
+#Replay option added after game is over, home page with play and exit,
 import tkinter as tk
 import random
 from tkinter import messagebox
@@ -148,7 +149,15 @@ class ColorLinesGame:
     def restart_game(self):
         self.canvas.delete("all")
         self.next_canvas.delete("all")
-        self.__init__(self.master)
+        self.score = 0
+        self.game_over = False
+        self.board = [[None] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+        self.ball_ids = [[None] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+        self.master.title("Color Lines - Score: 0")
+        self.score_label.config(text="Score: 0")
+        self.draw_board()
+        self.generate_next_balls()
+        self.generate_balls(3)
 
     def go_to_home(self):
         self.frame.destroy()
