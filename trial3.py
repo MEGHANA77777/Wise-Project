@@ -3,12 +3,21 @@
 #changed background color
 #made the grid lines smoother
 
+#added music 
+#mute/unmute button
+
 import tkinter as tk
 import random
 from tkinter import messagebox
+import pygame  # Add this import
+
+# Initializing pygame mixer
+pygame.mixer.init()
+pygame.mixer.music.load('background_music.mp3') 
+pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
 # Constants
-BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]  # Removed "lightpink"
+BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]
 BALL_RADIUS = 20
 CELL_SIZE = 50
 MOVE_DELAY = 500  # in milliseconds
@@ -36,10 +45,14 @@ class ColorLinesGame:
         self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg="white")
         self.score_label.pack(pady=10)
 
+        self.mute_button = tk.Button(self.frame, text="Mute", font=FONT_STYLE, bg="gray", fg="white", command=self.toggle_music)
+        self.mute_button.pack(pady=10)
+
         self.board = [[None] * self.grid_size for _ in range(self.grid_size)]
         self.ball_ids = [[None] * self.grid_size for _ in range(self.grid_size)]
         self.score = 0
         self.game_over = False
+        self.music_muted = False
 
         self.next_balls = [None, None, None]
 
@@ -164,6 +177,15 @@ class ColorLinesGame:
         self.frame.destroy()
         HomeWindow(self.master)
 
+    def toggle_music(self):
+        if self.music_muted:
+            pygame.mixer.music.unpause()
+            self.mute_button.config(text="Mute")
+        else:
+            pygame.mixer.music.pause()
+            self.mute_button.config(text="Unmute")
+        self.music_muted = not self.music_muted
+
 class HomeWindow:
     def __init__(self, master):
         self.master = master
@@ -180,7 +202,7 @@ class HomeWindow:
         self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Helvetica", 18), bg=BACKGROUND_COLOR, fg="white")
         self.grid_size_label.pack(pady=10)
 
-        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=CHECKBOX_COLOR, selectcolor="#555555")
+        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=CHECKBOX_COLOR)
         self.grid_size_9.pack()
 
         self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=CHECKBOX_COLOR, selectcolor="#555555")
