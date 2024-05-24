@@ -89,4 +89,4 @@ pygame.quit()
 2. **Error Handling**: It's a good practice to include error handling to manage issues like missing files or unsupported formats.
 3. **Volume Control**: The volume can be controlled for both individual sound effects and the music module as a whole.
 
-By using the `pygame.mixer` module, you can add rich audio experiences to your games and multimedia applications with ease.
+By using the `pygame.mixer` module, you can add rich audio experiences to your games and multimedia applications with ease. 
