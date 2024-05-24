@@ -1,3 +1,8 @@
+#added grid choosing options
+#added more colors
+#changed background color
+#made the grid lines smoother
+
 import tkinter as tk
 import random
 from tkinter import messagebox
