@@ -55,8 +55,8 @@ class ColorLinesGame:
         self.music_muted = False
 
         self.next_balls = [None, None, None]
-        self.background_image = PhotoImage(file='background_image.png')  # Load your background image
-        self.canvas.create_image(0, 0, image=self.background_image, anchor="nw")  # Set the background image
+        self.background_image = PhotoImage(file='https://images.app.goo.gl/yw79kSgNY1UbwbzJ8')  # Load your background image
+        self.canvas.create_image(100, 100, image=self.background_image, anchor="nw")  # Set the background image
 
 
 
