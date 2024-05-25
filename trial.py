@@ -1,6 +1,10 @@
 import tkinter as tk
 import random
 from tkinter import messagebox
+import pygame  # Import pygame for music
+
+# Initialize pygame mixer
+pygame.mixer.init()
 
 # Constants
 BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]  # Added more colors
@@ -189,13 +193,19 @@ class HomeWindow:
         self.exit_button = tk.Button(self.frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red", fg="white", padx=20, pady=10)
         self.exit_button.pack(pady=10)
 
+        self.play_background_music()  # Play background music when the home window is initialized
+
     def start_game(self):
         grid_size = self.grid_size_var.get()
         self.frame.destroy()
         ColorLinesGame(self.master, grid_size)
 
+    def play_background_music(self):
+        pygame.mixer.music.load("background_music.mp3")  # Load your background music file
+        pygame.mixer.music.play(-1)  # Play the music in a loop
+
 if __name__ == "__main__":
     root = tk.Tk()
     HomeWindow(root)
     root.mainloop()
-
+    pygame.mixer.music.stop()  # Stop the music when the mainloop ends
