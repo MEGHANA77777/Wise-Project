@@ -1,6 +1,7 @@
 # Added grid choosing options
 # Added more colors
 # Changed background color
+# Added background image
 # Made the grid lines smoother
 # Added music
 # Mute/unmute button
@@ -54,6 +55,10 @@ class ColorLinesGame:
         self.music_muted = False
 
         self.next_balls = [None, None, None]
+        self.background_image = PhotoImage(file='background_image.png')  # Load your background image
+        self.canvas.create_image(0, 0, image=self.background_image, anchor="nw")  # Set the background image
+
+
 
         self.draw_board()
         self.generate_next_balls()
