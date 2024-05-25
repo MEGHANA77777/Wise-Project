@@ -1,8 +1,11 @@
-#added background color
-#added grid options
+#added grid choosing options - t
+#added more colors - t
+#changed background color - N
+#made the grid lines smoother - t
 
-
-
+#added music - P
+#mute/unmute button - T
+#fixed the end bug - M
 
 import tkinter as tk
 import random
