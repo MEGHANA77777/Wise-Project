@@ -25,17 +25,20 @@ class ColorLinesGame:
         self.master.configure(bg=BACKGROUND_COLOR)
 
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
-        self.frame.pack()
+        self.frame.pack(fill="both", expand=True)
 
         self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE*1.2, bg="#FBCEB1", highlightthickness=0)
-        self.next_canvas.pack(pady=10)
+        self.next_canvas.pack(side="top", pady=10)
         self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
 
-        self.canvas = tk.Canvas(self.frame, width=CELL_SIZE * self.grid_size, height=CELL_SIZE * self.grid_size, bg=BACKGROUND_COLOR, highlightthickness=0)
-        self.canvas.pack(padx=10, pady=10)
+        self.canvas_frame = tk.Frame(self.frame, bg=BACKGROUND_COLOR)
+        self.canvas_frame.pack(pady=10)
+
+        self.canvas = tk.Canvas(self.canvas_frame, width=CELL_SIZE * self.grid_size, height=CELL_SIZE * self.grid_size, bg=BACKGROUND_COLOR, highlightthickness=0)
+        self.canvas.pack()
 
         self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-        self.score_label.pack(pady=10)
+        self.score_label.pack(side="bottom", pady=10)
 
         self.initialize_game()
 
@@ -54,6 +57,7 @@ class ColorLinesGame:
         self.canvas.bind("<Button-1>", self.handle_click)
         self.selected_ball = None
 
+    # ... (rest of the ColorLinesGame class remains the same)
     def draw_board(self):
         self.canvas.delete("all")
         for row in range(self.grid_size):
@@ -167,48 +171,69 @@ class ColorLinesGame:
         self.frame.destroy()
         HomeWindow(self.master)
 
+
 class HomeWindow:
+    # ... (no changes in the HomeWindow class)
     def __init__(self, master):
         self.master = master
         self.master.title("Color Lines")
-        self.master.configure(bg=BACKGROUND_COLOR)
 
-        self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
-        self.frame.pack(fill="both", expand=True)
+        # Set the screen size and center the window
+        screen_width = 800
+        screen_height = 600
+        x = (self.master.winfo_screenwidth() // 2) - (screen_width // 2)
+        y = (self.master.winfo_screenheight() // 2) - (screen_height // 2)
+        self.master.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
 
-        self.label = tk.Label(self.frame, text="Welcome to Color Lines!", font=("Jokerman", 36, "bold"), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-        self.label.pack(pady=30)
+        # Load and set the background image
+        self.bg_image = tk.PhotoImage(file="background.png")
+        self.bg_label = tk.Label(master, image=self.bg_image)
+        self.bg_label.place(relwidth=1, relheight=1)
+
+        self.label = tk.Label(master, text="Welcome to Color Lines!", font=("Jokerman", 36, "bold"), fg=TEXT_COLOR)
+        self.label.place(relx=0.5, rely=0.2, anchor="center")
 
         self.grid_size_var = tk.IntVar(value=9)
 
-        self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Showcard Gothic", 24), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-        self.grid_size_label.pack(pady=10)
+        self.grid_size_label = tk.Label(master, text="Select Grid Size:", font=("Showcard Gothic", 24), fg=TEXT_COLOR)
+        self.grid_size_label.place(relx=0.5, rely=0.35, anchor="center")
 
-        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Showcard Gothic", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
-        self.grid_size_9.pack()
+        self.grid_size_9 = tk.Radiobutton(master, text="9x9", variable=self.grid_size_var, value=9, font=("Showcard Gothic", 16), fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
+        self.grid_size_9.place(relx=0.5, rely=0.45, anchor="center")
 
-        self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Showcard Gothic", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
-        self.grid_size_10.pack()
+        self.grid_size_10 = tk.Radiobutton(master, text="10x10", variable=self.grid_size_var, value=10, font=("Showcard Gothic", 16), fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
+        self.grid_size_10.place(relx=0.5, rely=0.55, anchor="center")
 
-        self.play_button = tk.Button(self.frame, text="Play", command=self.start_game, font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
-        self.play_button.pack(pady=10)
+        self.play_button = tk.Button(master, text="Play", command=self.start_game, font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
+        self.play_button.place(relx=0.5, rely=0.65, anchor="center")
 
-        self.instructions_button = tk.Button(self.frame, text="Instructions", command=self.show_instructions,
-                                             font=FONT_STYLE, bg="#FFBF00", fg="#000000", padx=20, pady=10)
-        self.instructions_button.pack(pady=10)
+        self.instructions_button = tk.Button(master, text="Instructions", command=self.show_instructions, font=FONT_STYLE, bg="#FFBF00", fg="#000000", padx=20, pady=10)
+        self.instructions_button.place(relx=0.5, rely=0.75, anchor="center")
 
-        self.exit_button = tk.Button(self.frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red",
-                                     fg="#000000", padx=20, pady=10)
-        self.exit_button.pack(pady=10)
-
+        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red", fg="#000000", padx=20, pady=10)
+        self.exit_button.place(relx=0.5, rely=0.85, anchor="center")
 
     def start_game(self):
         grid_size = self.grid_size_var.get()
-        self.frame.destroy()
         ColorLinesGame(self.master, grid_size)
 
     def show_instructions(self):
-        instructions = (
+        self.instruction_window = tk.Toplevel(self.master)
+        self.instruction_window.title("Instructions")
+
+        # Set the screen size and center the window
+        screen_width = 800
+        screen_height = 600
+        x = (self.instruction_window.winfo_screenwidth() // 2) - (screen_width // 2)
+        y = (self.instruction_window.winfo_screenheight() // 2) - (screen_height // 2)
+        self.instruction_window.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
+
+        # Load and set the background image for the instruction window
+        self.instruction_bg_image = tk.PhotoImage(file="background.png")
+        self.instruction_bg_label = tk.Label(self.instruction_window, image=self.instruction_bg_image)
+        self.instruction_bg_label.place(relwidth=1, relheight=1)
+
+        instructions_text = (
             "Welcome to Color Lines!\n\n"
             "The goal of the game is to score points by forming lines of at least five balls of the same color.\n\n"
             "How to play:\n"
@@ -219,11 +244,14 @@ class HomeWindow:
             "The game ends when the board is full and there are no empty cells left.\n\n"
             "Good luck and have fun!"
         )
-        messagebox.showinfo("Instructions", instructions)
+        instructions_label = tk.Label(self.instruction_window, text=instructions_text, font=("Showcard Gothic", 14), fg=TEXT_COLOR, wraplength=600, justify="left")
+        instructions_label.place(relx=0.5, rely=0.5, anchor="center")
 
-    def play_background_music(self):
-        pygame.mixer.music.load("background_music.mp3")  # Load your background music file
-        pygame.mixer.music.play(-1)  # Play the music in a loop
+
+        def play_background_music(self):
+            pygame.mixer.music.load("background_music.mp3")  # Load your background music
+            pygame.mixer.music.play(-1)  # Play the music in a loop
+
 
 if __name__ == "__main__":
     root = tk.Tk()
