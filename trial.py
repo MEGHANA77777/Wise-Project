@@ -11,23 +11,23 @@ BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cy
 BALL_RADIUS = 20
 CELL_SIZE = 50
 MOVE_DELAY = 500
-BACKGROUND_COLOR = "#2C3E50"
+BACKGROUND_COLOR = "#B284BE"
 BUTTON_COLOR = "#2980B9"
 BUTTON_HIGHLIGHT = "#3498DB"
-TEXT_COLOR = "#ECF0F1"
-FONT_STYLE = ("Helvetica", 14)
+TEXT_COLOR = "#1B1B1B"
+FONT_STYLE = ("Showcard Gothic", 14)
 
 class ColorLinesGame:
     def __init__(self, master, grid_size):
         self.master = master
         self.grid_size = grid_size
-        self.master.title(f"Color Lines - Score: 0")
+        self.master.title(f"Color lines")
         self.master.configure(bg=BACKGROUND_COLOR)
 
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack()
 
-        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE*1.2, bg=TEXT_COLOR, highlightthickness=0)
+        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE*1.2, bg="#FBCEB1", highlightthickness=0)
         self.next_canvas.pack(pady=10)
         self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
 
@@ -176,29 +176,29 @@ class HomeWindow:
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack(fill="both", expand=True)
 
-        self.label = tk.Label(self.frame, text="Welcome to Color Lines!", font=("Helvetica", 24, "bold"), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+        self.label = tk.Label(self.frame, text="Welcome to Color Lines!", font=("Jokerman", 36, "bold"), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.label.pack(pady=30)
 
         self.grid_size_var = tk.IntVar(value=9)
 
-        self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Helvetica", 18), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
+        self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Showcard Gothic", 24), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.grid_size_label.pack(pady=10)
 
-        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
+        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Showcard Gothic", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
         self.grid_size_9.pack()
 
-        self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
+        self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Showcard Gothic", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
         self.grid_size_10.pack()
 
         self.play_button = tk.Button(self.frame, text="Play", command=self.start_game, font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
         self.play_button.pack(pady=10)
 
         self.instructions_button = tk.Button(self.frame, text="Instructions", command=self.show_instructions,
-                                             font=FONT_STYLE, bg="blue", fg="white", padx=20, pady=10)
+                                             font=FONT_STYLE, bg="#FFBF00", fg="#000000", padx=20, pady=10)
         self.instructions_button.pack(pady=10)
 
         self.exit_button = tk.Button(self.frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red",
-                                     fg="white", padx=20, pady=10)
+                                     fg="#000000", padx=20, pady=10)
         self.exit_button.pack(pady=10)
 
 
