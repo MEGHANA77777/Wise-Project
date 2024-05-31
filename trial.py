@@ -1,19 +1,21 @@
 import tkinter as tk
 import random
 from tkinter import messagebox
-import pygame  # Import pygame for music
+import pygame
 
 # Initialize pygame mixer
 pygame.mixer.init()
 
 # Constants
-BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]  # Added more colors
+BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cyan"]
 BALL_RADIUS = 20
 CELL_SIZE = 50
-MOVE_DELAY = 500  # in milliseconds
-BACKGROUND_COLOR = "#333333"  # Dark grey background for a 3D spatial effect
-CHECKBOX_COLOR = "#cccccc"  # Light grey color for checkboxes
-FONT_STYLE = ("Helvetica", 14)  # Font style for labels and buttons
+MOVE_DELAY = 500
+BACKGROUND_COLOR = "#2C3E50"
+BUTTON_COLOR = "#2980B9"
+BUTTON_HIGHLIGHT = "#3498DB"
+TEXT_COLOR = "#ECF0F1"
+FONT_STYLE = ("Helvetica", 14)
 
 class ColorLinesGame:
     def __init__(self, master, grid_size):
@@ -25,14 +27,14 @@ class ColorLinesGame:
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack()
 
-        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE, bg='white', highlightthickness=0)
+        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE, bg=TEXT_COLOR, highlightthickness=0)
         self.next_canvas.pack(pady=10)
         self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
 
         self.canvas = tk.Canvas(self.frame, width=CELL_SIZE * self.grid_size, height=CELL_SIZE * self.grid_size, bg=BACKGROUND_COLOR, highlightthickness=0)
         self.canvas.pack(padx=10, pady=10)
 
-        self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg="white")
+        self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.score_label.pack(pady=10)
 
         self.initialize_game()
@@ -53,12 +55,12 @@ class ColorLinesGame:
         self.selected_ball = None
 
     def draw_board(self):
-        self.canvas.delete("all")  # Clear the canvas before drawing the new board
+        self.canvas.delete("all")
         for row in range(self.grid_size):
             for col in range(self.grid_size):
                 x0, y0 = col * CELL_SIZE, row * CELL_SIZE
                 x1, y1 = x0 + CELL_SIZE, y0 + CELL_SIZE
-                gradient_color = '#%02x%02x%02x' % (255 - row * 5, 255 - row * 5, 255 - row * 5)  # Adjust color based on row for a 3D effect
+                gradient_color = '#%02x%02x%02x' % (255 - row * 5, 255 - row * 5, 255 - row * 5)
                 self.canvas.create_rectangle(x0, y0, x1, y1, outline="black", width=3, fill=gradient_color)
 
     def generate_next_balls(self):
@@ -152,11 +154,11 @@ class ColorLinesGame:
     def show_game_over_dialog(self):
         response = messagebox.askyesnocancel("Game Over", f"Game Over! Your score is {self.score}.\nDo you want to play again?", icon="info")
         if response is None:
-            self.master.destroy()  # User pressed Cancel (exit game)
+            self.master.destroy()
         elif response:
-            self.restart_game()  # User pressed Yes (restart game)
+            self.restart_game()
         else:
-            self.go_to_home()  # User pressed No (go to home screen)
+            self.go_to_home()
 
     def restart_game(self):
         self.initialize_game()
@@ -169,36 +171,55 @@ class HomeWindow:
     def __init__(self, master):
         self.master = master
         self.master.title("Color Lines")
+        self.master.configure(bg=BACKGROUND_COLOR)
 
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack(fill="both", expand=True)
 
-        self.label = tk.Label(self.frame, text="Welcome to Color Lines!", font=("Helvetica", 24, "bold"), bg=BACKGROUND_COLOR, fg="white")
+        self.label = tk.Label(self.frame, text="Welcome to Color Lines!", font=("Helvetica", 24, "bold"), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.label.pack(pady=30)
 
-        self.grid_size_var = tk.IntVar(value=9)  # Default grid size
+        self.grid_size_var = tk.IntVar(value=9)
 
-        self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Helvetica", 18), bg=BACKGROUND_COLOR, fg="white")
+        self.grid_size_label = tk.Label(self.frame, text="Select Grid Size:", font=("Helvetica", 18), bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.grid_size_label.pack(pady=10)
 
-        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=CHECKBOX_COLOR, selectcolor="#555555")
+        self.grid_size_9 = tk.Radiobutton(self.frame, text="9x9", variable=self.grid_size_var, value=9, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
         self.grid_size_9.pack()
 
-        self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=CHECKBOX_COLOR, selectcolor="#555555")
+        self.grid_size_10 = tk.Radiobutton(self.frame, text="10x10", variable=self.grid_size_var, value=10, font=("Helvetica", 16), bg=BACKGROUND_COLOR, fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
         self.grid_size_10.pack()
 
-        self.play_button = tk.Button(self.frame, text="Play", command=self.start_game, font=FONT_STYLE, bg="green", fg="white", padx=20, pady=10)
+        self.play_button = tk.Button(self.frame, text="Play", command=self.start_game, font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
         self.play_button.pack(pady=10)
 
-        self.exit_button = tk.Button(self.frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red", fg="white", padx=20, pady=10)
+        self.instructions_button = tk.Button(self.frame, text="Instructions", command=self.show_instructions,
+                                             font=FONT_STYLE, bg="blue", fg="white", padx=20, pady=10)
+        self.instructions_button.pack(pady=10)
+
+        self.exit_button = tk.Button(self.frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red",
+                                     fg="white", padx=20, pady=10)
         self.exit_button.pack(pady=10)
 
-        self.play_background_music()  # Play background music when the home window is initialized
 
     def start_game(self):
         grid_size = self.grid_size_var.get()
         self.frame.destroy()
         ColorLinesGame(self.master, grid_size)
+
+    def show_instructions(self):
+        instructions = (
+            "Welcome to Color Lines!\n\n"
+            "The goal of the game is to score points by forming lines of at least five balls of the same color.\n\n"
+            "How to play:\n"
+            "1. Click on a ball to select it.\n"
+            "2. Click on an empty cell to move the selected ball there.\n"
+            "3. Form lines horizontally, vertically, or diagonally with at least five balls of the same color.\n"
+            "4. Each time you move a ball, three new balls will appear on the board.\n\n"
+            "The game ends when the board is full and there are no empty cells left.\n\n"
+            "Good luck and have fun!"
+        )
+        messagebox.showinfo("Instructions", instructions)
 
     def play_background_music(self):
         pygame.mixer.music.load("background_music.mp3")  # Load your background music file
