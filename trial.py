@@ -27,7 +27,7 @@ class ColorLinesGame:
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack()
 
-        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE, bg=TEXT_COLOR, highlightthickness=0)
+        self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE*1.2, bg=TEXT_COLOR, highlightthickness=0)
         self.next_canvas.pack(pady=10)
         self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
 
@@ -71,7 +71,7 @@ class ColorLinesGame:
         self.next_canvas.delete("ball")
         for i, color in enumerate(self.next_balls):
             x, y = i * CELL_SIZE + CELL_SIZE // 2, CELL_SIZE // 2 + 10
-            self.next_canvas.create_oval(x - BALL_RADIUS, y - BALL_RADIUS, x + BALL_RADIUS, y + BALL_RADIUS, fill=color, tags="ball")
+            self.next_canvas.create_oval(x - BALL_RADIUS, y - BALL_RADIUS+6, x + BALL_RADIUS, y + BALL_RADIUS, fill=color, tags="ball")
 
     def generate_balls(self, num_balls):
         empty_cells = [(row, col) for row in range(self.grid_size) for col in range(self.grid_size) if self.board[row][col] is None]
