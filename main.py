@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-from tkinter import messagebox
+from tkinter import messagebox, PhotoImage
 import pygame
 
 # Initialize pygame mixer
@@ -39,6 +39,10 @@ class ColorLinesGame:
 
         self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
         self.score_label.pack(side="bottom", pady=10)
+
+        self.back_button = tk.Button(self.frame, text="🠔", command=self.go_to_home, font=("Courier", 23, "bold"),
+                                     bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=10, pady=5)
+        self.back_button.place(relx=0.01, rely=0.01, anchor="nw")
 
         self.initialize_game()
 
@@ -125,13 +129,15 @@ class ColorLinesGame:
 
     def check_lines(self):
         lines_removed = False
+        balls_to_generate = 3
         for row in range(self.grid_size):
             for col in range(self.grid_size):
                 if self.board[row][col] is not None:
                     for dr, dc in [(0, 1), (1, 0), (1, 1), (1, -1)]:
                         line = [(row, col)]
                         r, c = row, col
-                        while 0 <= r + dr < self.grid_size and 0 <= c + dc < self.grid_size and self.board[r + dr][c + dc] == self.board[row][col]:
+                        while 0 <= r + dr < self.grid_size and 0 <= c + dc < self.grid_size and self.board[r + dr][
+                            c + dc] == self.board[row][col]:
                             r += dr
                             c += dc
                             line.append((r, c))
@@ -141,12 +147,14 @@ class ColorLinesGame:
                                 self.canvas.delete(self.ball_ids[r][c])
                                 self.ball_ids[r][c] = None
                             self.score += len(line) * 2
+                            balls_to_generate = 0  # Set balls_to_generate to 0 when a line is removed
                             lines_removed = True
 
         if lines_removed:
-            self.master.title("Color Lines - Score: " + str(self.score))
-            self.score_label.config(text="Score: " + str(self.score))
+            self.master.title(f"Color Lines - Score: {self.score}")
+            self.score_label.config(text=f"Score: {self.score}")
 
+        self.generate_balls(balls_to_generate)
     def check_game_over(self):
         for row in range(self.grid_size):
             for col in range(self.grid_size):
@@ -169,8 +177,8 @@ class ColorLinesGame:
 
     def go_to_home(self):
         self.frame.destroy()
+        pygame.mixer.music.stop()  # Stop the music
         HomeWindow(self.master)
-
 
 class HomeWindow:
     # ... (no changes in the HomeWindow class)
@@ -213,6 +221,18 @@ class HomeWindow:
         self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red", fg="#000000", padx=20, pady=10)
         self.exit_button.place(relx=0.5, rely=0.85, anchor="center")
 
+        self.play_music_button = tk.Button(master, text="Play Music", command=self.play_background_music,
+                                          font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                          activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
+        self.play_music_button.place(relx=0.1, rely=0.9, anchor="sw")
+
+        self.stop_music_button = tk.Button(master, text="Stop Music", command=self.stop_background_music,
+                                           font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                           activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
+        self.stop_music_button.place(relx=0.9, rely=0.9, anchor="se")
+
+        self.music_playing = False
+
     def start_game(self):
         grid_size = self.grid_size_var.get()
         ColorLinesGame(self.master, grid_size)
@@ -247,14 +267,21 @@ class HomeWindow:
         instructions_label = tk.Label(self.instruction_window, text=instructions_text, font=("Showcard Gothic", 14), fg=TEXT_COLOR, wraplength=600, justify="left")
         instructions_label.place(relx=0.5, rely=0.5, anchor="center")
 
-
-        def play_background_music(self):
+    def play_background_music(self):
+        if not self.music_playing:
             pygame.mixer.music.load("background_music.mp3")  # Load your background music
             pygame.mixer.music.play(-1)  # Play the music in a loop
+            self.music_playing = True
+
+    def stop_background_music(self):
+        if  self.music_playing:
+            pygame.mixer.music.stop()
+            self.music_playing = False
 
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.iconphoto(True, PhotoImage(file="icon.png"))
     HomeWindow(root)
     root.mainloop()
     pygame.mixer.music.stop()  # Stop the music when the mainloop ends
