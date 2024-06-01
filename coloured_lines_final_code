@@ -17,6 +17,45 @@ BUTTON_HIGHLIGHT = "#3498DB"
 TEXT_COLOR = "#1B1B1B"
 FONT_STYLE = ("Showcard Gothic", 14)
 
+class GameOverWindow(tk.Toplevel):
+    def __init__(self, master, score):
+        super().__init__(master)
+        self.master = master
+        self.score = score
+        self.title("Game Over")
+
+        # Set the screen size and center the window
+        screen_width = 300
+        screen_height = 200
+        x = (self.winfo_screenwidth() // 2) - (screen_width // 2)
+        y = (self.winfo_screenheight() // 2) - (screen_height // 2)
+        self.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
+
+        self.bg_image = tk.PhotoImage(file="background.png")
+        self.bg_label = tk.Label(self, image=self.bg_image)
+        self.bg_label.place(relwidth=1, relheight=1)
+
+        self.label = tk.Label(self, text=f"Game Over!\nScore: {self.score}", font=("Showcard Gothic", 14), fg=TEXT_COLOR)
+        self.label.place(relx=0.5, rely=0.3, anchor="center")
+
+        self.play_again_button = tk.Button(self, text="Play Again", command=self.play_again,
+                                           font=("Showcard Gothic", 12), bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                           activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.play_again_button.place(relx=0.3, rely=0.7, anchor="center")
+
+        self.end_button = tk.Button(self, text="End", command=self.end_game,
+                                    font=("Showcard Gothic", 12), bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                    activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.end_button.place(relx=0.7, rely=0.7, anchor="center")
+
+    def play_again(self):
+        self.destroy()
+        ColorLinesGame(self.master, self.master.grid_size)
+
+    def end_game(self):
+        self.master.destroy()
+
+
 class ColorLinesGame:
     def __init__(self, master, grid_size):
         self.master = master
@@ -129,15 +168,13 @@ class ColorLinesGame:
 
     def check_lines(self):
         lines_removed = False
-        balls_to_generate = 3
         for row in range(self.grid_size):
             for col in range(self.grid_size):
                 if self.board[row][col] is not None:
                     for dr, dc in [(0, 1), (1, 0), (1, 1), (1, -1)]:
                         line = [(row, col)]
                         r, c = row, col
-                        while 0 <= r + dr < self.grid_size and 0 <= c + dc < self.grid_size and self.board[r + dr][
-                            c + dc] == self.board[row][col]:
+                        while 0 <= r + dr < self.grid_size and 0 <= c + dc < self.grid_size and self.board[r + dr][c + dc] == self.board[row][col]:
                             r += dr
                             c += dc
                             line.append((r, c))
@@ -147,14 +184,12 @@ class ColorLinesGame:
                                 self.canvas.delete(self.ball_ids[r][c])
                                 self.ball_ids[r][c] = None
                             self.score += len(line) * 2
-                            balls_to_generate = 0  # Set balls_to_generate to 0 when a line is removed
                             lines_removed = True
 
         if lines_removed:
-            self.master.title(f"Color Lines - Score: {self.score}")
-            self.score_label.config(text=f"Score: {self.score}")
+            self.master.title("Color Lines - Score: " + str(self.score))
+            self.score_label.config(text="Score: " + str(self.score))
 
-        self.generate_balls(balls_to_generate)
     def check_game_over(self):
         for row in range(self.grid_size):
             for col in range(self.grid_size):
@@ -165,6 +200,7 @@ class ColorLinesGame:
 
     def show_game_over_dialog(self):
         response = messagebox.askyesnocancel("Game Over", f"Game Over! Your score is {self.score}.\nDo you want to play again?", icon="info")
+
         if response is None:
             self.master.destroy()
         elif response:
@@ -180,6 +216,14 @@ class ColorLinesGame:
         pygame.mixer.music.stop()  # Stop the music
         HomeWindow(self.master)
 
+    def show_game_over_dialog(self):
+        GameOverWindow(self.master, self.score)
+
+    # Add a new method to switch to the home window
+    def switch_to_home(self):
+        self.frame.destroy()
+        pygame.mixer.music.stop()
+        HomeWindow(self.master)
 class HomeWindow:
     # ... (no changes in the HomeWindow class)
     def __init__(self, master):
