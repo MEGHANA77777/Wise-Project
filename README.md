@@ -32,6 +32,7 @@ Ensure you have Python installed. This game requires no additional packages othe
 - **Left Click**: Select a ball or move a selected ball to an empty cell.
 
 ## Code Structure
+- Game Over Window- provides option to replay and exit
 - `ColorLinesGame` class: Handles game logic, UI setup, and interactions.
 - `HomeWindow` class: Provides the home screen for grid size selection.
 - Main function: Initializes the game.
