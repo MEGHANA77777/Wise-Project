@@ -42,8 +42,8 @@ class ColorLinesGame:
         self.canvas = tk.Canvas(self.canvas_frame, width=CELL_SIZE * self.grid_size, height=CELL_SIZE * self.grid_size, bg=BACKGROUND_COLOR, highlightthickness=0)
         self.canvas.pack()
 
-        self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg="#FF964F", fg=TEXT_COLOR)
-        self.score_label.place(relx=0.5, rely=0.89, anchor="center")
+        self.score_label = tk.Label(self.frame, text="Score: 0", font=("Showcard Gothic",28), bg="#FF964F", fg=TEXT_COLOR)
+        self.score_label.place(relx=0.5, rely=0.87, anchor="center")
 
         self.back_button = tk.Button(self.frame, text="🠔", command=self.go_to_home, font=("Courier", 23, "bold"),
                                      bg="#FE4F5F", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=10, pady=5)
