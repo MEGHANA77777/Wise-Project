@@ -47,15 +47,14 @@
 \end{picture}
 \put(140,-15){\color{black}\textbf {AGENDA}}
 \begin{picture}(-3,-3)
-\put(315,-30){\includegraphics[width=40pt,height=50pt]{A7_code/bvraju.jpeg}}
+\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpeg}}
 \end{picture}}
 \justifying
 \begin{itemize} 
  \item Introduction
  \item Problem statement
-  \item Dataset description
-   \item Samples from Dataset
-  \item Literature Survey
+  \item Problem explanation
+   \item Contribution table
  
   
 
@@ -228,11 +227,12 @@ score, yours or other players.
 
 •	Added GUI \\
         \hline
-         23WH1A1279 & Pragna &•	Worked on Latex overleaf power point presentation
+         23WH1A1279 & Pragna &••	Uploaded music for the game
 
-•	Provided the idea for the project
+•	Documentation      
 
-•	Actively responded in the group
+•	Actively responded
+
 
 •	Added GUI \\
         \hline
@@ -261,10 +261,22 @@ score, yours or other players.
 \huge \textbf{THANK YOU}
 
 \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{
+\begin{picture}(-3,-3)
+\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
+\end{picture}
+\put(115,-30){\color{black}\textbf {Project link}}
+\begin{picture}(-3,-3)
+\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
+\end{picture}}
+
 
 \end{frame}
 
-\end{document}
+
 
 \end{document}\begin{figure}
 \begin{figure}
