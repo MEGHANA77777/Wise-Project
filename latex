@@ -1,7 +1,7 @@
 \documentclass{beamer}
 \date{}
 \setbeamertemplate{footline}[text line]{%
-\parbox{\linewidth}{\vspace*{5pt}29/05/2024\hfill Department of Computer Science and Engineering \hfill\insertpagenumber}}
+\parbox{\linewidth}{\vspace*{5pt} 3/06/2024\hfill Department of Information Technology\hfill\insertpagenumber}}
 \setbeamertemplate{navigation symbols}{}
 \usepackage{graphicx}
 \usepackage{lipsum} 
@@ -26,9 +26,9 @@
 \newline \put(85,10){\text{\LARGE BVRIT HYDERABAD}}
 \\
 \newline \put(75,-8){\large College of Engineering for Women }\\
-\put(290,-25){\includegraphics[width=40pt,height=50pt]{bvraju.jpeg}}
+\put(290,-25){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
 \end{picture}
-\put(45,-25){\text{\large Department of Computer Science and Engineering}}
+\put(45,-25){\text{\large Department of Information Technology}}
 \put(20,-70){\text{\LARGE  Colored Lines  }}
 
 
@@ -45,9 +45,10 @@
 \begin{picture}(-3,-3)
 \put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}
-\put(140,-15){\color{black}\textbf {AGENDA}}
+\put(115,-30){\color{black}\textbf {AGENDA}}
 \begin{picture}(-3,-3)
-\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpeg}}
+\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
+%\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}}
 \justifying
 \begin{itemize} 
@@ -55,12 +56,9 @@
  \item Problem statement
   \item Problem explanation
    \item Contribution table
- 
-  
-
-
-\end{itemize}
+   \end{itemize}
 \end{frame}
+
 \begin{frame}
 \frametitle{
 \begin{picture}(-3,-3)
@@ -77,7 +75,7 @@
 \justifying
 \begin{itemize}
    \item Colored lines 
-\item It  is a single player game board. It is played on a 9 x 9 grid.
+\item It  is a single player game board. It is played on a 9 x 9 grid and 10 x 10 grid.
 \begin{figure}
    
 
@@ -104,13 +102,13 @@
 \justifying
 \begin{itemize}
    \item Move the balls from cell to cell to group them into the lines of the same color.
-\item However, after each of your moves the computer drops three more balls onto the board.
-To avoid filling up the board you should gather the balls into lines of 5 or more balls.
-When such a line is complete, the balls are removed from the field and your score
-grows.
-\item The new balls will not be added to the field after a line removal. Instead you will be
-rewarded with yet another move before a new triplet of balls is added.
+\item  After each  move it drops three more balls onto the board.
 
+\item When line is complete, the balls are removed.
+
+\item  The game ends once the whole game board becomes filled up with
+balls.
+\item Remember – the more balls you remove at once the greater your score is
 \end{itemize}
 \end{minipage}
 \end{center}
@@ -122,38 +120,13 @@ rewarded with yet another move before a new triplet of balls is added.
 \begin{picture}(-3,-3)
 \put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}
-\put(115,-30){\color{black}\textbf {PROBLEM EXPLANATION}}
+\put(115,-30){\color{black}\textbf {TEAM CONTRIBUTION}}
 \begin{picture}(-3,-3)
 \put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
 %\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}}
 
-\begin{center}
-\begin{minipage}{\textwidth}
-\justifying
-\begin{itemize}
-   \item  The scoring system is quite simple – each removed ball gives you two points, but there
-is an extra bonus available. The goal of the “Color Lines” game is to stay in game as
-long as possible. The game ends once the whole game board becomes filled up with
-balls.
-\item Remember – the more balls you remove at once the greater your score is. You are
-playing against a computer that cannot be won, so you compete against the highest
-score, yours or other players.
-\end{itemize}
-\end{minipage}
-\end{center}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{
-\begin{picture}(-3,-3)
-\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
-\end{picture}
-\put(115,-30){\color{black}\textbf {Team Contributions}}
-\begin{picture}(-3,-3)
-\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
-\end{picture}}
 
 \justifying
 \begin{flushleft}
@@ -166,78 +139,18 @@ score, yours or other players.
         \hline
         {Roll.No} & {NAME} & {CONTRIBUTIONS} \\
         \hline
-        23WH1A1276 & Meghana &•	Took a step forward and chose to be a team leader
-
-•	Written the python code for the project
-
-•	Ensured that everybody worked together 
-
-•	Balanced the needs of individual team members with the needs of the team as whole
-
-•	Prepared basic structure and code
-
-•	Added GUI \\
+        23WH1A1276 & Meghana & coding ,added and improved GUI  \\
         \hline
-         23WH1A1277 & Trupti& •	Has done research in various languages for the topic which we have been given
-
-•	Worked on errors
-
-•	Actively participated in all the tasks
-
-•	Added grids for the game 
-
-•	Added GUI
-
+         23WH1A1277 & Trupti&  Debugging, improved GUI,used canva to set the background \\
         \hline
-    \end{tabular}
-    }
-\end{table}
-}
-\end{flushleft}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{
-\begin{picture}(-3,-3)
-\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
-\end{picture}
-\put(115,-30){\color{black}\textbf {Team Contributions}}
-\begin{picture}(-3,-3)
-\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
-\end{picture}}
-
-\justifying
-\begin{flushleft}
-\resizebox{\textwidth}{!}{%
-\begin{table}[htbp]
-    \large
-    \renewcommand{\arraystretch}{1.5}
-    {\fontsize{14}{14}\selectfont
-    \begin{tabular}{|c|p{4cm}|p{8cm}|p{8cm}|p{6cm}}
+         23WH1A1278& Pranathi & PPT using latex,Source Finding \\
         \hline
-        {Roll.No} & {NAME} & {CONTRIBUTIONS} \\
+        23WH1A1279 & Pragna & music,documentation,suggested some features \\
+        \hline
+         23WH1A1275 & Navya &  background\\
+        \hline
+
     
-        \hline
-         23WH1A1278 & Pranathi & •	Worked on Latex overleaf power point presentation
-
-•	Provided the idea for the project
-
-•	Actively responded in the group
-
-•	Added GUI \\
-        \hline
-         23WH1A1279 & Pragna &••	Uploaded music for the game
-
-•	Documentation      
-
-•	Actively responded
-
-
-•	Added GUI \\
-        \hline
-         23WH1A1275 & Navya &•	Uploaded background image/wallpaper for the game \\
-        \hline
     \end{tabular}
     }
 \end{table}
@@ -249,6 +162,7 @@ score, yours or other players.
 
 
 
+
 \begin{frame}
 \begin{center}
 \frametitle{
@@ -256,7 +170,8 @@ score, yours or other players.
 \put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}
 \begin{picture}(-3,-3)
-\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpeg}}
+\put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
+%\put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}}
 \huge \textbf{THANK YOU}
 
@@ -269,6 +184,7 @@ score, yours or other players.
 \put(-10,-30){\includegraphics[width=40pt,height=50pt]{bvrith.jpeg}}
 \end{picture}
 \put(115,-30){\color{black}\textbf {Project link}}
+\put{https://github.com/MEGHANA77777/Wise-Project}
 \begin{picture}(-3,-3)
 \put(315,-30){\includegraphics[width=40pt,height=50pt]{bvraju.jpg}}
 \end{picture}}
