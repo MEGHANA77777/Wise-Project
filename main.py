@@ -1,3 +1,4 @@
+#With game over window play again and exit option only bg color
 import tkinter as tk
 import random
 from tkinter import messagebox, PhotoImage
@@ -11,7 +12,7 @@ BALL_COLORS = ["red", "blue", "green", "yellow", "orange", "purple", "pink", "cy
 BALL_RADIUS = 20
 CELL_SIZE = 50
 MOVE_DELAY = 500
-BACKGROUND_COLOR = "#B284BE"
+BACKGROUND_COLOR = "#FCF5C7"
 BUTTON_COLOR = "#2980B9"
 BUTTON_HIGHLIGHT = "#3498DB"
 TEXT_COLOR = "#1B1B1B"
@@ -27,6 +28,10 @@ class ColorLinesGame:
         self.frame = tk.Frame(master, bg=BACKGROUND_COLOR)
         self.frame.pack(fill="both", expand=True)
 
+        self.bg_image = tk.PhotoImage(file="bg4.png")  # Replace "background.png" with your image file
+        self.bg_label = tk.Label(self.frame, image=self.bg_image)
+        self.bg_label.place(relwidth=1, relheight=1)
+
         self.next_canvas = tk.Canvas(self.frame, width=CELL_SIZE * 3, height=CELL_SIZE*1.2, bg="#FBCEB1", highlightthickness=0)
         self.next_canvas.pack(side="top", pady=10)
         self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
@@ -37,12 +42,22 @@ class ColorLinesGame:
         self.canvas = tk.Canvas(self.canvas_frame, width=CELL_SIZE * self.grid_size, height=CELL_SIZE * self.grid_size, bg=BACKGROUND_COLOR, highlightthickness=0)
         self.canvas.pack()
 
-        self.score_label = tk.Label(self.frame, text="Score: 0", font=FONT_STYLE, bg=BACKGROUND_COLOR, fg=TEXT_COLOR)
-        self.score_label.pack(side="bottom", pady=10)
+        self.score_label = tk.Label(self.frame, text="Score: 0", font=("Showcard Gothic",28), bg="#FF964F", fg=TEXT_COLOR)
+        self.score_label.place(relx=0.5, rely=0.87, anchor="center")
 
-        self.back_button = tk.Button(self.frame, text="🠔", command=self.go_to_home, font=("Courier", 23, "bold"),
-                                     bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=10, pady=5)
+        self.back_button = tk.Button(self.frame, text="⌂", command=self.go_to_home, font=("Showcard Gothic", 23, "bold"),
+                                     bg="#FF9AA2", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=10, pady=5)
         self.back_button.place(relx=0.01, rely=0.01, anchor="nw")
+
+        self.restart_button = tk.Button(self.frame, text="RESTART", command=self.restart_game_window,
+                                     font=("Showcard Gothic", 16, "bold"),
+                                     bg="#C1CD97", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.restart_button.place(relx=0.98, rely=0.02, anchor="ne")  # Top-right corner, slightly exceeding the frame
+
+        self.exit_button = tk.Button(self.frame, text="EXIT", command=self.master.quit,
+                                     font=("Showcard Gothic", 16, "bold"),
+                                     bg="#FFA2A2", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.exit_button.place(relx=0.98, rely=0.12, anchor="ne")  # Below the first button, with some space
 
         self.initialize_game()
 
@@ -60,6 +75,28 @@ class ColorLinesGame:
 
         self.canvas.bind("<Button-1>", self.handle_click)
         self.selected_ball = None
+
+        # Re-create the buttons
+        self.next_canvas.create_text(75, 10, text="Next Balls", font=FONT_STYLE)
+        
+        self.back_button = tk.Button(self.frame, text="⌂", command=self.go_to_home,
+                                     font=("Showcard Gothic", 23, "bold"),
+                                     bg="#FF9AA2", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=10, pady=5)
+        self.back_button.place(relx=0.01, rely=0.01, anchor="nw")
+
+        self.score_label = tk.Label(self.frame, text="Score: 0", font=("Showcard Gothic", 28), bg="#FF964F",
+                                    fg=TEXT_COLOR)
+        self.score_label.place(relx=0.5, rely=0.87, anchor="center")
+
+        self.restart_button = tk.Button(self.frame, text="RESTART", command=self.restart_game_window,
+                                        font=("Showcard Gothic", 16, "bold"),
+                                        bg="#C1CD97", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.restart_button.place(relx=0.98, rely=0.02, anchor="ne")
+
+        self.exit_button = tk.Button(self.frame, text="EXIT", command=self.master.quit,
+                                     font=("Showcard Gothic", 16, "bold"),
+                                     bg="#FFA2A2", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=8, pady=4)
+        self.exit_button.place(relx=0.98, rely=0.12, anchor="ne")
 
     # ... (rest of the ColorLinesGame class remains the same)
     def draw_board(self):
@@ -164,15 +201,56 @@ class ColorLinesGame:
         self.show_game_over_dialog()
 
     def show_game_over_dialog(self):
-        response = messagebox.askyesnocancel("Game Over", f"Game Over! Your score is {self.score}.\nDo you want to play again?", icon="info")
-        if response is None:
-            self.master.destroy()
-        elif response:
-            self.restart_game()
-        else:
-            self.go_to_home()
+        game_over_window = tk.Toplevel(self.master)
+        game_over_window.title("Game Over")
+        game_over_window.configure(bg=BACKGROUND_COLOR)
 
-    def restart_game(self):
+        # Set the screen size and center the window
+        screen_width = 400
+        screen_height = 200
+        x = (game_over_window.winfo_screenwidth() // 2) - (screen_width // 2)
+        y = (game_over_window.winfo_screenheight() // 2) - (screen_height // 2)
+        game_over_window.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
+
+        game_over_label = tk.Label(game_over_window, text=f"Game Over!\nYour score is {self.score}", font=FONT_STYLE,
+                                   fg=TEXT_COLOR, bg=BACKGROUND_COLOR)
+        game_over_label.pack(pady=20)
+
+        button_frame = tk.Frame(game_over_window, bg=BACKGROUND_COLOR)
+        button_frame.pack(pady=10)
+
+        play_again_button = tk.Button(button_frame, text="Play Again",
+                                      command=lambda: self.restart_game(game_over_window), font=FONT_STYLE,
+                                      bg="#6EB5FF", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20,
+                                      pady=10)
+        play_again_button.pack(side="left", padx=10)
+
+        exit_button = tk.Button(button_frame, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="#FE4F5F",
+                                fg="#000000", padx=20, pady=10)
+        exit_button.pack(side="right", padx=10)
+
+    def restart_game_window(self):
+
+        # Destroy the current game board
+        self.canvas.delete("all")
+        self.next_canvas.delete("all")
+        self.score_label.destroy()
+        self.back_button.destroy()
+        self.restart_button.destroy()
+        self.exit_button.destroy()
+
+        # Re-initialize the game
+        self.initialize_game()
+
+
+    def restart_game(self, game_over_window):
+        game_over_window.destroy()
+        self.canvas.delete("all")
+        self.next_canvas.delete("all")
+        self.score_label.destroy()
+        self.back_button.destroy()
+        self.restart_button.destroy()
+        self.exit_button.destroy()
         self.initialize_game()
 
     def go_to_home(self):
@@ -187,23 +265,23 @@ class HomeWindow:
         self.master.title("Color Lines")
 
         # Set the screen size and center the window
-        screen_width = 800
-        screen_height = 600
+        screen_width = 1300
+        screen_height = 800
         x = (self.master.winfo_screenwidth() // 2) - (screen_width // 2)
         y = (self.master.winfo_screenheight() // 2) - (screen_height // 2)
         self.master.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
 
         # Load and set the background image
-        self.bg_image = tk.PhotoImage(file="background.png")
+        self.bg_image = tk.PhotoImage(file="bg1.png")
         self.bg_label = tk.Label(master, image=self.bg_image)
         self.bg_label.place(relwidth=1, relheight=1)
 
-        self.label = tk.Label(master, text="Welcome to Color Lines!", font=("Jokerman", 36, "bold"), fg=TEXT_COLOR)
+        self.label = tk.Label(master, text="Welcome to Color Lines!", font=("Jokerman", 36, "bold"), fg=TEXT_COLOR, bg="#FFF5BA" )
         self.label.place(relx=0.5, rely=0.2, anchor="center")
 
         self.grid_size_var = tk.IntVar(value=9)
 
-        self.grid_size_label = tk.Label(master, text="Select Grid Size:", font=("Showcard Gothic", 24), fg=TEXT_COLOR)
+        self.grid_size_label = tk.Label(master, text="Select Grid Size:", font=("Showcard Gothic", 24), fg=TEXT_COLOR, bg = "#FFF5BA")
         self.grid_size_label.place(relx=0.5, rely=0.35, anchor="center")
 
         self.grid_size_9 = tk.Radiobutton(master, text="9x9", variable=self.grid_size_var, value=9, font=("Showcard Gothic", 16), fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
@@ -212,22 +290,22 @@ class HomeWindow:
         self.grid_size_10 = tk.Radiobutton(master, text="10x10", variable=self.grid_size_var, value=10, font=("Showcard Gothic", 16), fg=TEXT_COLOR, selectcolor=BUTTON_HIGHLIGHT)
         self.grid_size_10.place(relx=0.5, rely=0.55, anchor="center")
 
-        self.play_button = tk.Button(master, text="Play", command=self.start_game, font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
+        self.play_button = tk.Button(master, text="Play", command=self.start_game, font=FONT_STYLE, bg="#6EB5FF", fg=TEXT_COLOR, activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
         self.play_button.place(relx=0.5, rely=0.65, anchor="center")
 
-        self.instructions_button = tk.Button(master, text="Instructions", command=self.show_instructions, font=FONT_STYLE, bg="#FFBF00", fg="#000000", padx=20, pady=10)
+        self.instructions_button = tk.Button(master, text="Instructions", command=self.show_instructions, font=FONT_STYLE, bg="#FEED4F", fg="#000000", padx=20, pady=10)
         self.instructions_button.place(relx=0.5, rely=0.75, anchor="center")
 
-        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="red", fg="#000000", padx=20, pady=10)
+        self.exit_button = tk.Button(master, text="Exit", command=self.master.quit, font=FONT_STYLE, bg="#FE4F5F", fg="#000000", padx=20, pady=10)
         self.exit_button.place(relx=0.5, rely=0.85, anchor="center")
 
         self.play_music_button = tk.Button(master, text="Play Music", command=self.play_background_music,
-                                          font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                          font=FONT_STYLE, bg="#ACE7FF", fg=TEXT_COLOR,
                                           activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
         self.play_music_button.place(relx=0.1, rely=0.9, anchor="sw")
 
         self.stop_music_button = tk.Button(master, text="Stop Music", command=self.stop_background_music,
-                                           font=FONT_STYLE, bg=BUTTON_COLOR, fg=TEXT_COLOR,
+                                           font=FONT_STYLE, bg="#ACE7FF", fg=TEXT_COLOR,
                                            activebackground=BUTTON_HIGHLIGHT, padx=20, pady=10)
         self.stop_music_button.place(relx=0.9, rely=0.9, anchor="se")
 
@@ -242,14 +320,14 @@ class HomeWindow:
         self.instruction_window.title("Instructions")
 
         # Set the screen size and center the window
-        screen_width = 800
+        screen_width = 900
         screen_height = 600
         x = (self.instruction_window.winfo_screenwidth() // 2) - (screen_width // 2)
         y = (self.instruction_window.winfo_screenheight() // 2) - (screen_height // 2)
         self.instruction_window.geometry(f"{screen_width}x{screen_height}+{x}+{y}")
 
         # Load and set the background image for the instruction window
-        self.instruction_bg_image = tk.PhotoImage(file="background.png")
+        self.instruction_bg_image = tk.PhotoImage(file="bg.png")
         self.instruction_bg_label = tk.Label(self.instruction_window, image=self.instruction_bg_image)
         self.instruction_bg_label.place(relwidth=1, relheight=1)
 
@@ -264,8 +342,8 @@ class HomeWindow:
             "The game ends when the board is full and there are no empty cells left.\n\n"
             "Good luck and have fun!"
         )
-        instructions_label = tk.Label(self.instruction_window, text=instructions_text, font=("Showcard Gothic", 14), fg=TEXT_COLOR, wraplength=600, justify="left")
-        instructions_label.place(relx=0.5, rely=0.5, anchor="center")
+        instructions_label = tk.Label(self.instruction_window, text=instructions_text, font=("Showcard Gothic", 14), fg=TEXT_COLOR, bg="#FFF5E1",wraplength=469, justify="left")
+        instructions_label.place(relx=0.5, rely=0.499, anchor="center")
 
     def play_background_music(self):
         if not self.music_playing:
